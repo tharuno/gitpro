@@ -36,6 +36,24 @@ pipeline {
             }
         }
 
+        stage('Deploy') {
+            steps {
+                sh '''
+                    sudo -n /usr/local/bin/deploy-employee-management
+                '''
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                sh '''
+                    sleep 5
+                    curl --fail --silent --show-error \
+                         http://localhost:8080/api/employees
+                '''
+            }
+        }
+
         stage('Archive Artifact') {
             steps {
                 archiveArtifacts artifacts: 'backend/target/*.jar',
