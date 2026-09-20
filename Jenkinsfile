@@ -49,10 +49,11 @@ pipeline {
                 sh '''
                     echo "Waiting for application to start..."
 
-                    for i in {1..12}
+                    i=1
+
+                    while [ "$i" -le 12 ]
                     do
-                        if curl --fail --silent --show-error \
-                            http://localhost:8080/api/employees
+                        if curl --fail --silent --show-error http://localhost:8080/api/employees
                         then
                             echo ""
                             echo "Application is healthy!"
@@ -60,6 +61,8 @@ pipeline {
                         fi
 
                         echo "Application not ready yet. Attempt $i/12"
+
+                        i=$((i + 1))
                         sleep 5
                     done
 
@@ -77,5 +80,3 @@ pipeline {
         }
     }
 }
-
-
