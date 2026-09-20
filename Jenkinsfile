@@ -47,9 +47,24 @@ pipeline {
         stage('Health Check') {
             steps {
                 sh '''
-                    sleep 5
-                    curl --fail --silent --show-error \
-                         http://localhost:8080/api/employees
+                    echo "Waiting for application to start..."
+
+                    for i in {1..12}
+                    do
+                        if curl --fail --silent --show-error \
+                            http://localhost:8080/api/employees
+                        then
+                            echo ""
+                            echo "Application is healthy!"
+                            exit 0
+                        fi
+
+                        echo "Application not ready yet. Attempt $i/12"
+                        sleep 5
+                    done
+
+                    echo "Application failed to become healthy."
+                    exit 1
                 '''
             }
         }
@@ -62,3 +77,5 @@ pipeline {
         }
     }
 }
+
+
